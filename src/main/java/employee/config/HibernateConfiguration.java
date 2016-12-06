@@ -63,7 +63,7 @@ public class HibernateConfiguration {
 
         final LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[] { "employee.model" });
+        sessionFactory.setPackagesToScan("employee.model");
 
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
