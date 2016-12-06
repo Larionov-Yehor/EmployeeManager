@@ -1,8 +1,8 @@
 package employee.config;
 
-import employee.properties.AppProperties;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +28,18 @@ import java.util.Properties;
 
 public class HibernateConfiguration {
 
+    @Value("${db.url}")
+    String dataBaseUrl;
+
+    @Value("${db.username}")
+    String dataBaseUser;
+
+    @Value("${db.password}")
+    String dataBasePass;
+
+    @Value("${db.driver}")
+    String dbDriver;
+
     @Autowired
     private Environment environment;
 
@@ -36,45 +48,42 @@ public class HibernateConfiguration {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    @Bean
-    public Properties getHibernateProperties() throws URISyntaxException {
+    private Properties hibernateProperties() {
+
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", getAppProperties().getDialect());
-        properties.put("{hibernate.show_sql}", getAppProperties().getShowSql());
-        properties.put("${hibernate.hbm2ddl.auto}", getAppProperties().getHibernateHbm2Dll());
+        properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+        properties.put("hibernate.format_sql", environment.getRequiredProperty("hibernate.format_sql"));
+        properties.put("hibernateHbm2Dll", environment.getRequiredProperty("hibernateHbm2Dll"));
         return properties;
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory() throws URISyntaxException {
+    public LocalSessionFactoryBean sessionFactory() {
+
         final LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan(new String[]{"todolist.model"});
+        sessionFactory.setPackagesToScan(new String[] { "employee.model" });
 
-        sessionFactory.setHibernateProperties(getHibernateProperties());
+        sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
 
     @Bean
     @Autowired
     public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
+
         HibernateTransactionManager transactionManager = new HibernateTransactionManager();
         transactionManager.setSessionFactory(sessionFactory);
         return transactionManager;
     }
 
     @Bean
-    public DataSource dataSource() throws URISyntaxException {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource(getAppProperties().getUrl(),
-                getAppProperties().getUserName(),
-                getAppProperties().getUserPassword());
-        dataSource.setDriverClassName(getAppProperties().getDriver());
+    public DataSource dataSource() {
+
+        DriverManagerDataSource dataSource = new DriverManagerDataSource(dataBaseUrl, dataBaseUser, dataBasePass);
+        dataSource.setDriverClassName(dbDriver);
         return dataSource;
     }
 
-    @Bean
-    public AppProperties getAppProperties() throws URISyntaxException {
-        return new AppProperties(System.getenv("DATABASE_URL"));
-
-    }
 }

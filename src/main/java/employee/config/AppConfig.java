@@ -32,7 +32,6 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 
         resolvers.add(jsonViewResolver());
 
-
         resolver.setViewResolvers(resolvers);
         return resolver;
     }
