@@ -9,4 +9,5 @@ import java.util.List;
  */
 public interface DaoEmployee {
     public List<Employee> getAll();
+    public void add(Employee employee);
 }

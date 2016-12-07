@@ -10,16 +10,16 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 /**
- * Created by employee on 12/6/16.
+ * Created by employee on 12/7/16.
  */
 public class Initializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
 
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(employee.config.AppConfig.class);
-        servletContext.addListener(new ContextLoaderListener(context));
+        context.register(employee.config.WebMvc.class, HibernateConfiguration.class);
 
+        servletContext.addListener(new ContextLoaderListener(context));
         context.setServletContext(servletContext);
 
         ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher_servlet",new DispatcherServlet(context));

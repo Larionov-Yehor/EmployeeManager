@@ -24,4 +24,9 @@ public class DaoEmployeeImpl implements DaoEmployee {
         List<Employee> result = criteria.list();
         return  result;
     }
+
+    @Override
+    public void add(Employee employee) {
+
+    }
 }
